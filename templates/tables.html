@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database Table Structure List</title>
+</head>
+<body>
+    <h1>Tables in the Research Lab Database</h1>
+    <hr>
+    
+    {% if error_detail %}
+        <h2 style="color: red;">❌ Failed to Retrieve Table Information!</h2>
+        <p>Connection or Query Error: <code>{{ error_detail }}</code></p>
+    {% elif table_names %}
+        <p>Found **{{ table_names | length }}** base tables in the public schema:</p>
+        <ol>
+        {% for table in table_names %}
+            <li><strong><a href="/tables/{{ table }}">{{ table }}</a></strong></li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <p>No tables found in the public schema. Please check if your initialization script ran successfully.</p>
+    {% endif %}
+
+    <hr>
+    <p><a href="/">Return to Connection Status Page</a></p>
+</body>
+</html>

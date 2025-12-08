@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table Data - {{ table_name }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; }
+        table { width: 90%; margin: 20px auto; border-collapse: collapse; background-color: white; box-shadow: 0 2px 3px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; text-transform: uppercase; font-size: 14px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Table Data: `{{ table_name }}`</h1>
+    <hr>
+
+    {% if error_detail %}
+        <h2 class="error">❌ Failed to Retrieve Data!</h2>
+        <p>Query Error: <code>{{ error_detail }}</code></p>
+    {% elif rows %}
+        <p>Total Rows: <strong>{{ rows | length }}</strong></p>
+        <table>
+            <thead>
+                <tr>
+                    {% for header in headers %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for cell in row %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>The table `{{ table_name }}` exists, but no data was found.</p>
+    {% endif %}
+
+    <hr>
+    <p><a href="/tables">← Back to Table List</a></p>
+</body>
+</html>

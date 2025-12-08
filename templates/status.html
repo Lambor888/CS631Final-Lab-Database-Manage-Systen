@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database Connection Status</title>
+</head>
+<body>
+    <h1>Database Connection Status Check</h1>
+    <hr>
+    
+    {% if status_message == "Success" %}
+        <h2 style="color: green;">✅ Welcome to the Lab Data Management System!</h2>
+        <a href="/tables">
+        <button style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 15px;">
+            View All Database Tables
+        </button>
+    {% else %}
+        <h2 style="color: red;">❌ Connection Failed!</h2>
+        <p>Detailed Error Message: <code>{{ error_detail }}</code></p>
+        <p>Please check your Docker Compose configuration and the `db` container logs.</p>
+    {% endif %}
+
+    <h3>Connection Parameters:</h3>
+    <p>Database Host (Inside Docker): <code>db:5432</code></p>
+    <p>Database Name: <code>database</code></p>
+</body>
+</html>
