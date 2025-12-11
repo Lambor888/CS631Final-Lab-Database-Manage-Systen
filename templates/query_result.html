@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Query Result - {{ page_title }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; }
+        .result-box { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .error { color: #dc3545; background-color: #f8d7da; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb; }
+        .success-msg { color: #155724; background-color: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+        .btn:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Query Result: {{ page_title }}</h1>
+    <hr>
+
+    <div class="result-box">
+        {% if error_detail %}
+            <div class="error">
+                <h3>❌ Execution Error</h3>
+                <p>{{ error_detail }}</p>
+                <p>SQL Query: <code>{{ sql_query }}</code></p>
+            </div>
+        
+        {% elif rows %}
+            <div class="success-msg">✅ Successfully found {{ rows | length }} records.</div>
+            <table>
+                <thead>
+                    <tr>
+                        {% for header in headers %}
+                            <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+        {% else %}
+            <div class="success-msg">✅ Query executed successfully, but no matching data was found.</div>
+        {% endif %}
+    </div>
+
+    <a href="/queries-list" class="btn">← Back to Query List</a>
+</body>
+</html>
