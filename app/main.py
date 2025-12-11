@@ -220,13 +220,33 @@ async def list_tables(request: Request):
         }
     )
 
-@app.get("/queries-list", include_in_schema=False)
-async def queries_list_page(request: Request):
+@app.get("/project-member-management", include_in_schema=False)
+async def project_member_management_page(request: Request):
     """
-    Route: Render the query center menu page (queries_list.html)
+    Route: Render the task 1 project and member management page
     """
     return templates.TemplateResponse(
-        "queries_list.html", 
+        "project_member_management.html", 
+        {"request": request}
+    )
+
+@app.get("/equipment-usage-tracking", include_in_schema=False)
+async def equipment_usage_tracking_page(request: Request):
+    """
+    Route: Render the task 2 equipment usage tracking page
+    """
+    return templates.TemplateResponse(
+        "equipment_usage_tracking.html", 
+        {"request": request}
+    )
+
+@app.get("/grant-publication-reporting", include_in_schema=False)
+async def grant_publication_reporting_page(request: Request):
+    """
+    Route: Render the task 3 grant and publication reporting page
+    """
+    return templates.TemplateResponse(
+        "grant_publication_reporting.html", 
         {"request": request}
     )
 
