@@ -15,10 +15,10 @@ async def get_project_status(request: Request, project_identifier: str = Form(..
     """
     # write RAW sql 👇
     if project_identifier.isdigit():
-        sql = "SELECT * FROM project WHERE project_id = %s;"
+        sql = "SELECT project_id, title, status FROM project WHERE project_id = %s;"
         params = (int(project_identifier),)
     else:
-        sql = "SELECT * FROM project WHERE title ILIKE %s;"
+        sql = "SELECT project_id, title, status FROM project WHERE title ILIKE %s;"
         params = (f"%{project_identifier}%",)
 
     # Execute SQL
