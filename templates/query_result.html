@@ -55,6 +55,14 @@
         {% endif %}
     </div>
 
-    <a href="/queries-list" class="btn">← Back to Query List</a>
+    {% if origin == 'project' %}
+    <a href="/project-member-management" class="btn">← Back to Project and Member Management</a>
+    {% elif origin == 'equipment' %}
+    <a href="/equipment-usage-tracking" class="btn">← Back to Equipment Usage Tracking</a>
+    {% elif origin == 'grant' %}
+    <a href="/grant-publication-reporting" class="btn">← Back to Grant and Publication Reporting</a>
+    {% else %}
+    <a href="/" class="btn">← Back to Query List</a>
+    {% endif %}
 </body>
 </html>
