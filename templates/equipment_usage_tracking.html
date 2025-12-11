@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Equipment Usage Tracking</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; }
+        .query-section { 
+            background-color: white; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            border-left: 5px solid #007bff;
+        }
+        h2 { border-bottom: 1px dashed #ccc; padding-bottom: 5px; color: #007bff; }
+        input[type="text"] { 
+            padding: 10px; 
+            font-size: 16px; 
+            width: 300px; 
+            margin-right: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+        }
+        button { 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Equipment Usage Tracking</h1>
+    <p>Please select a function and enter the required parameters to perform a query.</p>
+    <hr>
+    <!--add button-->
+    <div class="query-section">
+        <h2>Project Status Query (Project Status)</h2>
+        <p><strong>Function Description:</strong> Enter a project ID or a keyword from the project title to retrieve the project's current status and details.</p>
+        
+        <form method="POST" action="/query/project-status">
+            <input type="text" name="project_identifier" placeholder="Enter ID or title..." required>
+            <button type="submit">Query Project Status</button>
+        </form>
+    </div>
+    <!--this is a button section-->
+    <!--add more query buttons here if needed-->
+
+    <hr>
+    <p><a href="/">← Back to Status Page</a></p>
+</body>
+</html>
