@@ -52,7 +52,7 @@ CREATE TABLE PROJECT (
     Project_ID SERIAL PRIMARY KEY,
     Leader_ID INTEGER NOT NULL, 
     Title VARCHAR(200) NOT NULL,
-    Status VARCHAR(50),
+    Status VARCHAR(50) CHECK (Status IN ('Active', 'Completed', 'Paused')),
     Start_Date DATE,
     End_Date DATE,
     FOREIGN KEY (Leader_ID) REFERENCES LAB_MEMBER(Member_ID)
@@ -82,7 +82,7 @@ CREATE TABLE EQUIPMENT (
     Equip_ID SERIAL PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
     Type VARCHAR(50),
-    Status VARCHAR(50),
+    Status VARCHAR(50) CHECK (Status IN ('Available', 'In Use', 'Retired')),
     Purchase_Date DATE,
     Req_Qualification VARCHAR(100) -- Required qualification to use this equipment
 );
