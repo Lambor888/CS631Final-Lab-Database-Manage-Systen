@@ -14,6 +14,11 @@
         <button style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 15px;">
             View All Database Tables
         </button>
+        </a> <a href="/sql-executor">
+        <button style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 15px; background-color: #28a745;">
+            Execute Raw SQL 
+        </button>
+        </a>
     {% else %}
         <h2 style="color: red;">❌ Connection Failed!</h2>
         <p>Detailed Error Message: <code>{{ error_detail }}</code></p>

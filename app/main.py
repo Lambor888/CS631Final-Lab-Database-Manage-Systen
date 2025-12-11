@@ -126,6 +126,41 @@ def get_table_data(table_name):
         if conn:
             conn.close()
 
+def execute_raw_sql(sql_query):
+    """
+    Connects to the database and executes any SQL statement.
+    Returns execution results (headers/rows/status_message/error).
+    """
+    conn = None
+    try:
+        conn = psycopg2.connect(DATABASE_URL)
+        
+        with conn.cursor() as cur:
+            # Execute the query
+            cur.execute(sql_query)
+            
+            # Check if there is a result set (SELECT/EXPLAIN)
+            if cur.description is not None:
+                headers = [desc[0] for desc in cur.description]
+                rows = cur.fetchall()
+                conn.commit()
+                return headers, rows, None, None # Return headers, rows, status, error
+            else:
+                # For non-query commands (INSERT/UPDATE/DELETE/CREATE/ALTER)
+                status = cur.statusmessage
+                conn.commit()
+                return None, None, status, None # Return status message
+            
+    except Exception as e:
+        # Catch all exceptions, especially SQL syntax errors or constraint violations
+        if conn:
+            conn.rollback()
+        return None, None, None, str(e)
+        
+    finally:
+        if conn:
+            conn.close()
+
 @app.get("/tables/{table_name}", include_in_schema=False)
 async def table_detail(request: Request, table_name: str):
     """
@@ -174,6 +209,39 @@ async def list_tables(request: Request):
             "request": request,
             "table_names": table_names,
             "error_detail": error
+        }
+    )
+
+@app.get("/sql-executor", include_in_schema=False)
+async def sql_executor_page(request: Request):
+    """
+    render SQL Executor page (GET request).
+    """
+    return templates.TemplateResponse(
+        "sql_executor.html", 
+        {"request": request, "sql_query": ""}
+    )
+
+@app.post("/execute-sql", include_in_schema=False)
+async def execute_sql(request: Request):
+    """
+    Receive and execute SQL statement (POST request).
+    """
+    form = await request.form()
+    sql_query = form.get("sql_query", "").strip()
+    
+    headers, rows, status_message, error_detail = execute_raw_sql(sql_query)
+    
+    # Render results to the same template
+    return templates.TemplateResponse(
+        "sql_executor.html", 
+        {
+            "request": request,
+            "sql_query": sql_query,
+            "headers": headers,
+            "rows": rows,
+            "status_message": status_message,
+            "error_detail": error_detail
         }
     )
 
