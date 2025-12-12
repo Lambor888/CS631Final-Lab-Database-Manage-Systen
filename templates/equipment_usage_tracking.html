@@ -40,12 +40,21 @@
     <hr>
     <!--add button-->
     <div class="query-section">
-        <h2>Project Status Query (Project Status)</h2>
-        <p><strong>Function Description:</strong> Enter a project ID or a keyword from the project title to retrieve the project's current status and details.</p>
+        <h2>Equipment Status Query</h2>
+        <p><strong>Function Description:</strong> Enter an equipment ID or a keyword from the equipment name to retrieve the equipment's current status and details.</p>
         
-        <form method="POST" action="/query/project-status">
-            <input type="text" name="project_identifier" placeholder="Enter ID or title..." required>
-            <button type="submit">Query Project Status</button>
+        <form method="POST" action="/query/equipment-status">
+            <input type="text" name="equipment_identifier" placeholder="Enter ID or title...">
+            <button type="submit">Query Equipment Status</button>
+        </form>
+    </div>
+    <div class="query-section">
+        <h2>Equipment Usage and Projects Query</h2>
+        <p><strong>Function Description:</strong> Enter an equipment ID or a keyword from the equipment name to retrieve the members using this equipment and their project.</p>
+        
+        <form method="POST" action="/query/equipment-members">
+            <input type="text" name="equipment_identifier" placeholder="Enter ID or title...">
+            <button type="submit">Query Equipment Members</button>
         </form>
     </div>
     <!--this is a button section-->
