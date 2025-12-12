@@ -56,12 +56,16 @@ VALUES (20003, 'Oliver', 'Walker', 'Student', '2023-08-22');
 INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20003, 'S9004', 'MS', 'ME');
 
 INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date)
-VALUES (20004, 'Liam', 'Wilson', 'Student', '2024-01-10');
+VALUES (20004, 'Liam', 'Wilson', 'Student', '2022-01-10');
 INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20004, 'S9005', 'PhD', 'CS');
 
 INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date, Mentor_ID, Mentor_Start_Date, Mentor_End_Date)
-VALUES (20005, 'Sophia', 'Martinez', 'Student', '2024-02-15', 9, '2024-02-15', '2026-02-15');
+VALUES (20005, 'Sophia', 'Martinez', 'Student', '2024-02-15', 9, '2024-04-15', '2026-02-15');
 INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20005, 'S9006', 'MS', 'BIO');
+
+INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date, Mentor_ID, Mentor_Start_Date, Mentor_End_Date)
+VALUES (20006, 'James', 'Anderson', 'Student', '2020-03-01', 5, '2024-03-01', '2027-03-01');
+INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20006, 'S9007', 'PhD', 'EE');
 
 
 -- Grants
@@ -83,6 +87,9 @@ VALUES (302, 1, 'Quantum Computing in Drug Discovery', 'Paused', '2023-03-01', '
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (104, 3, 'AI Ethics Framework Development', 'Completed', '2021-03-10', '2023-03-10');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
+VALUES (200, 5, 'Advancement in Modulation for Signal Processing', 'Active', '2022-05-01', '2025-05-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (105, 8, 'Wearable Technology for Health Monitoring', 'Active', '2022-11-05', '2025-11-05');
@@ -116,6 +123,8 @@ VALUES (302, 'Solar Panel Array', 'Renewable Energy', 'In Use', '2020-05-20', 'C
 INSERT INTO EQUIPMENT (Equip_ID, Name, Type, Status, Purchase_Date) 
 VALUES (303, 'Chemical Storage Unit', 'Safety Equipment', 'Retired', '2002-08-30');
 
+INSERT INTO EQUIPMENT (Equip_ID, Name, Type, Status, Purchase_Date, Req_Qualification)
+VALUES (304, 'Multimeter', 'Measurement Device', 'Available', '2018-03-15', 'Electrical Safety Training');
 -- Publication 
 INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
 VALUES (401, 'Integrating Wearable Technology into Chronic Disease Management', 'January', 2022, 'IEEE', '10.1080/13658816.2021.1904696');
@@ -147,6 +156,26 @@ VALUES (409, 'Advances in Renewable Energy Storage Technologies', 'October', 202
 INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
 VALUES (410, 'Project Management Strategies for Large-Scale Engineering Projects', 'December', 2019, 'International Journal of Project Management', '10.1016/j.ijproman.2019.06.004');
 
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (411, 'Exploration of AI in Mechanical Systems Design', 'May', 2024, 'Journal of Mechanical Design', '10.1115/1.4045362');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (412, 'Adversarial Networks in Image Recognition: A Survey', 'August', 2022, 'Computer Vision Journal', '10.1007/s11263-022-01567-8');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (413, 'Deep Learning Approaches for Natural Language Processing', 'March', 2023, 'Journal of Artificial Intelligence Research', '10.1613/jair.1.12345');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (414, 'Fungusal Biofilms in Medical Device Infections', 'June', 2024, 'Journal of Clinical Microbiology', '10.1128/JCM.01234-21');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (415, 'Solar Energy Harvesting Techniques for Remote Sensors', 'November', 2021, 'Sensors and Actuators A: Physical', '10.1016/j.sna.2021.112345');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (416, 'Signal Processing Algorithms for 5G Communications', 'January', 2020, 'IEEE Transactions on Signal Processing', '10.1109/TSP.2019.2951234');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (417, 'State Space Models in Control Systems Engineering', 'April', 2019, 'Control Engineering Practice', '10.1016/j.conengprac.2019.02.005');
 -- Authors
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (9, 401);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (2, 402);
@@ -158,13 +187,24 @@ INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (3, 407);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (1, 408);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (9, 409);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (8, 410);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20003, 411);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20004, 412);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20004, 413);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20005, 414);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20006, 415);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20006, 416);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20006, 417);
+
+
 
 -- Qualifications
 INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (1, 'AI Ethics');
 INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (3, 'AI Ethics');
 INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (4, 'Quantum Physics');
 INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (5, 'Certified Solar Installer');
+INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (5, 'Electrical Safety Training');
 INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (8, 'Project Management Professional');
+INSERT INTO HAS_QUALIFICATION (Member_ID, Qualification) VALUES (20006, 'Electrical Safety Training');
 
 -- Works On
 INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours) 
@@ -200,3 +240,6 @@ VALUES (1, 301, 'Training Model A', '2024-12-01', '2024-12-10');
 
 INSERT INTO USAGE_LOG (Member_ID, Equip_ID, Purpose, Start_Date, End_Date) 
 VALUES (5, 302, 'Collect and Analyze Solar Energy', '2024-05-21', '2024-09-10');
+
+INSERT INTO USAGE_LOG (Member_ID, Equip_ID, Purpose, Start_Date, End_Date)
+VALUES (20006, 304, 'Electrical Measurements for Project', '2024-12-15', '2025-03-20');
