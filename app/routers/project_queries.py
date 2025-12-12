@@ -232,4 +232,60 @@ async def get_equipment_members(request: Request, equipment_identifier: str = Fo
         "origin": origin
     })
 
+# Task 3 Bullet 1: Identify the name of the member(s) with the highest number of publications.
+@router.post("/query/publication-count") #your own query function
+async def get_member_publications(request: Request, publication_count: str = Form(None)):
+    """
+    Handles the equipment members query form submission.
+    Determines if the input is equipment ID (numeric) or equipment name (text),
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    if publication_count is None:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", COUNT(publication.public_id) AS "Number of Publications"
+            FROM lab_member, publication, author
+            WHERE lab_member.member_id = author.member_id AND author.public_id = publication.public_id
+            GROUP BY lab_member.first_name, lab_member.last_name
+            ORDER BY "Number of Publications" DESC;
+        """
+        params = ""
+    elif publication_count.isdigit():
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", COUNT(publication.public_id) AS "Number of Publications"
+            FROM lab_member, publication, author
+            WHERE lab_member.member_id = author.member_id AND author.public_id = publication.public_id
+            GROUP BY lab_member.first_name, lab_member.last_name
+            ORDER BY "Number of Publications" DESC
+            LIMIT %s;
+        """
+        params = (int(publication_count),)
+    # Default query if user enters anything other than a numerical value
+    else:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", COUNT(publication.public_id) AS "Number of Publications"
+            FROM lab_member, publication, author
+            WHERE lab_member.member_id = author.member_id AND author.public_id = publication.public_id
+            GROUP BY lab_member.first_name, lab_member.last_name
+            ORDER BY "Number of Publications" DESC;
+        """
+        params = ""
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Equipment Members Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
+    })
+
 # You can continue adding other project-related query functions here...
