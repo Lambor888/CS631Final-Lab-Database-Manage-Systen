@@ -199,7 +199,7 @@ async def get_equipment_members(request: Request, equipment_identifier: str = Fo
             LEFT JOIN work_on ON lab_member.member_id = work_on.member_id
             LEFT JOIN project ON work_on.project_id = project.project_id
             JOIN usage_log ON lab_member.member_id = usage_log.member_id
-            JOIN equipment ON usage_log.equip_id = equipment.equip_id;
+            JOIN equipment ON usage_log.equip_id = equipment.equip_id
             WHERE equip_id = %s;
         """
         params = (int(equipment_identifier),)
@@ -210,7 +210,7 @@ async def get_equipment_members(request: Request, equipment_identifier: str = Fo
             LEFT JOIN work_on ON lab_member.member_id = work_on.member_id
             LEFT JOIN project ON work_on.project_id = project.project_id
             JOIN usage_log ON lab_member.member_id = usage_log.member_id
-            JOIN equipment ON usage_log.equip_id = equipment.equip_id;
+            JOIN equipment ON usage_log.equip_id = equipment.equip_id
             WHERE name ILIKE %s;
         """
         params = (f"%{equipment_identifier}%",)
