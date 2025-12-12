@@ -8,14 +8,17 @@ templates = Jinja2Templates(directory="templates")
 
 # Task 1 Bullet 2: Display the status of a project.
 @router.post("/query/project-status") #your own query function
-async def get_project_status(request: Request, project_identifier: str = Form(...)):
+async def get_project_status(request: Request, project_identifier: str = Form(None)):
     """
     Handles the project status query form submission.
     Determines if the input is a project ID (numeric) or a project title (text),
     constructs the appropriate SQL query, executes it, and renders the results.
     """
     # write RAW sql 👇
-    if project_identifier.isdigit():
+    if project_identifier is None:
+        sql = """SELECT project_id AS "Project ID", title AS "Project Title", status AS "Project Status" FROM project;"""
+        params = ""
+    elif project_identifier.isdigit():
         sql = """SELECT project_id AS "Project ID", title AS "Project Title", status AS "Project Status" FROM project WHERE project_id = %s;"""
         params = (int(project_identifier),)
     else:
@@ -41,14 +44,24 @@ async def get_project_status(request: Request, project_identifier: str = Form(..
 
 # Task 1 Bullet 3: Show members who have worked on projects funded by a given grant.
 @router.post("/query/project-grant") #your own query function
-async def get_project_grant(request: Request, project_grant: str = Form(...)):
+async def get_project_grant(request: Request, project_grant: str = Form(None)):
     """
     Handles the project grant query form submission.
     Determines if the input is a grant ID (numeric) or a grant source (text),
     constructs the appropriate SQL query, executes it, and renders the results.
     """
     # write RAW sql 👇
-    if project_grant.isdigit():
+    if project_grant is None:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", project.title AS "Project Title", grant_info.source AS "Grant Source"
+            FROM lab_member
+            JOIN work_on ON lab_member.member_id = work_on.member_id
+            JOIN funds ON work_on.project_id = funds.project_id
+            JOIN grant_info ON funds.grant_id = grant_info.grant_id
+            JOIN project ON project.project_id = work_on.project_id;
+        """
+        params = ""
+    elif project_grant.isdigit():
         sql = """
             SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", project.title AS "Project Title", grant_info.source AS "Grant Source"
             FROM lab_member
@@ -92,9 +105,8 @@ async def get_project_grant(request: Request, project_grant: str = Form(...)):
 @router.post("/query/mentor-relations") #your own query function
 async def get_mentor_relations(request: Request):
     """
-    Handles the project status query form submission.
-    Determines if the input is a project ID (numeric) or a project title (text),
-    constructs the appropriate SQL query, executes it, and renders the results.
+    Handles the mentor relation query form submission.
+    Constructs the appropriate SQL query, executes it, and renders the results.
     """
     # write RAW sql 👇
     sql = """ 
@@ -123,6 +135,101 @@ async def get_mentor_relations(request: Request):
         "error_detail": error,
         "sql_query": sql,
         "origin": origin  
+    })
+
+# Task 2 Bullet 2: Show status of a piece of equipment.
+@router.post("/query/equipment-status") #your own query function
+async def get_equipment_status(request: Request, equipment_identifier: str = Form(None)):
+    """
+    Handles the equipment status query form submission.
+    Determines if the input is equipment ID (numeric) or a equipment name (text),
+    constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    if equipment_identifier is None:
+        sql = """SELECT equip_id AS "Equipment ID", name AS "Equipment Name", status AS "Equipment Status" FROM equipment;"""
+        params = ""
+    elif equipment_identifier.isdigit():
+        sql = """SELECT equip_id AS "Equipment ID", name AS "Equipment Name", status AS "Equipment Status" FROM equipment WHERE equip_id = %s;"""
+        params = (int(equipment_identifier),)
+    else:
+        sql = """SELECT equip_id AS "Equipment ID", name AS "Equipment Name", status AS "Equipment Status" FROM equipment WHERE name ILIKE %s;"""
+        params = (f"%{equipment_identifier}%",)
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "equipment"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Equipment Status Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
+    })
+
+# Task 2 Bullet 3: Show the members using a piece of equipment and their projects.
+@router.post("/query/equipment-members") #your own query function
+async def get_equipment_members(request: Request, equipment_identifier: str = Form(None)):
+    """
+    Handles the equipment members query form submission.
+    Determines if the input is equipment ID (numeric) or equipment name (text),
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    if equipment_identifier is None:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", equipment.name as "Equipment Name", project.title AS "Project Title"
+            FROM lab_member
+            LEFT JOIN work_on ON lab_member.member_id = work_on.member_id
+            LEFT JOIN project ON work_on.project_id = project.project_id
+            JOIN usage_log ON lab_member.member_id = usage_log.member_id
+            JOIN equipment ON usage_log.equip_id = equipment.equip_id;
+        """
+        params = ""
+    elif equipment_identifier.isdigit():
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", equipment.name as "Equipment Name", project.title AS "Project Title"
+            FROM lab_member
+            LEFT JOIN work_on ON lab_member.member_id = work_on.member_id
+            LEFT JOIN project ON work_on.project_id = project.project_id
+            JOIN usage_log ON lab_member.member_id = usage_log.member_id
+            JOIN equipment ON usage_log.equip_id = equipment.equip_id;
+            WHERE equip_id = %s;
+        """
+        params = (int(equipment_identifier),)
+    else:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", equipment.name as "Equipment Name", project.title AS "Project Title"
+            FROM lab_member
+            LEFT JOIN work_on ON lab_member.member_id = work_on.member_id
+            LEFT JOIN project ON work_on.project_id = project.project_id
+            JOIN usage_log ON lab_member.member_id = usage_log.member_id
+            JOIN equipment ON usage_log.equip_id = equipment.equip_id;
+            WHERE name ILIKE %s;
+        """
+        params = (f"%{equipment_identifier}%",)
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "equipment"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Equipment Members Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
     })
 
 # You can continue adding other project-related query functions here...
