@@ -40,12 +40,12 @@
     <hr>
     <!--add button-->
     <div class="query-section">
-        <h2>Project Status Query (Project Status)</h2>
-        <p><strong>Function Description:</strong> Enter a project ID or a keyword from the project title to retrieve the project's current status and details.</p>
+        <h2>Member Publications Query</h2>
+        <p><strong>Function Description:</strong> Enter a number to limit the number of members returned.</p>
         
-        <form method="POST" action="/query/project-status">
-            <input type="text" name="project_identifier" placeholder="Enter ID or title..." required>
-            <button type="submit">Query Project Status</button>
+        <form method="POST" action="/query/publication-count">
+            <input type="text" name="publication_count" placeholder="Enter ID or title...">
+            <button type="submit">Query Member Publications</button>
         </form>
     </div>
     <!--this is a button section-->
