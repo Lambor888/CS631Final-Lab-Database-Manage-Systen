@@ -6,7 +6,7 @@ CREATE TABLE LAB_MEMBER (
     First_Name VARCHAR(50) NOT NULL,
     Middle_Name VARCHAR(50),
     Last_Name VARCHAR(50) NOT NULL,
-    Type VARCHAR(20) NOT NULL CHECK (Type IN ('Student', 'Faculty', 'Collaborator')),
+    Type VARCHAR(20) NOT NULL CHECK ((lower(Type) IN ('student', 'faculty', 'collaborator'))),
     Join_Date DATE NOT NULL,
     
     -- Mentor Relationship 
@@ -52,7 +52,7 @@ CREATE TABLE PROJECT (
     Project_ID SERIAL PRIMARY KEY,
     Leader_ID INTEGER NOT NULL, 
     Title VARCHAR(200) NOT NULL,
-    Status VARCHAR(50) CHECK (Status IN ('Active', 'Completed', 'Paused')),
+    Status VARCHAR(50) CHECK ((lower(Status) IN ('active', 'completed', 'paused'))),
     Start_Date DATE,
     End_Date DATE,
     FOREIGN KEY (Leader_ID) REFERENCES LAB_MEMBER(Member_ID)
@@ -82,7 +82,7 @@ CREATE TABLE EQUIPMENT (
     Equip_ID SERIAL PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
     Type VARCHAR(50),
-    Status VARCHAR(50) CHECK (Status IN ('Available', 'In Use', 'Retired')),
+    Status VARCHAR(50) CHECK ((lower(Status) IN ('available', 'in use', 'retired', 'maintenance'))),
     Purchase_Date DATE,
     Req_Qualification VARCHAR(100) -- Required qualification to use this equipment
 );
@@ -130,10 +130,10 @@ CREATE TABLE FUNDS (
 CREATE TABLE USAGE_LOG (
     Member_ID INTEGER,
     Equip_ID INTEGER,
-    Start_Date DATE NOT NULL, -- Adding time might be better, but the document only specifies Date
-    End_Date DATE,
+    Start_Date DATE NOT NULL,
+    End_Date DATE NOT NULL,
     Purpose VARCHAR(200),
-    PRIMARY KEY (Member_ID, Equip_ID, Start_Date),
+    PRIMARY KEY (Member_ID, Equip_ID),
     FOREIGN KEY (Member_ID) REFERENCES LAB_MEMBER(Member_ID),
     FOREIGN KEY (Equip_ID) REFERENCES EQUIPMENT(Equip_ID)
 );
