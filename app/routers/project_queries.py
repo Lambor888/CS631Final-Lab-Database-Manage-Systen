@@ -236,8 +236,8 @@ async def get_equipment_members(request: Request, equipment_identifier: str = Fo
 @router.post("/query/publication-count") #your own query function
 async def get_member_publications(request: Request, publication_count: str = Form(None)):
     """
-    Handles the equipment members query form submission.
-    Determines if the input is equipment ID (numeric) or equipment name (text),
+    Handles the member publications query form submission.
+    Uses a default or numerical number of members to limit the number of results returned,
     Constructs the appropriate SQL query, executes it, and renders the results.
     """
     # write RAW sql 👇
@@ -270,6 +270,73 @@ async def get_member_publications(request: Request, publication_count: str = For
             ORDER BY "Number of Publications" DESC;
         """
         params = ""
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Equipment Members Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
+    })
+
+# Task 3 Bullet 4: Find the three most prolific members who have worked on a project funded by a given grant.
+@router.post("/query/grant-prolific") #your own query function
+async def get_grant_prolific_members(request: Request, grant_identifier: str = Form(...)):
+    """
+    Handles the prolific members of a certain grant query form submission.
+    Determines if the input is grant ID (numeric) or grant source (text),
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    # Should not be None but have here just in case it could be in the future 
+    if grant_identifier is None:
+        sql = """
+            SELECT First_name, last_name, title, L.Source, COUNT(P.Member_ID) AS COUNT_PUB
+            FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND FUNds.Grant_ID = 101 )
+            AS L
+            LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
+            JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
+            JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
+            GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
+            ORDER BY COUNT_PUB DESC
+            FETCH FIRST 3 ROWS ONLY;
+        """
+        params = ""
+    elif grant_identifier.isdigit():
+        sql = """
+            SELECT First_name, last_name, title, L.Source, COUNT(P.Member_ID) AS COUNT_PUB
+            FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND FUNds.Grant_ID = %s )
+            AS L
+            LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
+            JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
+            JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
+            GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
+            ORDER BY COUNT_PUB DESC
+            FETCH FIRST 3 ROWS ONLY;
+        """
+        params = (int(grant_identifier),)
+    else:
+        sql = """
+            SELECT First_name, last_name, title, L.Source, COUNT(P.Member_ID) AS COUNT_PUB
+            FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND GRANT_INFO.source ILIKE %s )
+            AS L
+            LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
+            JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
+            JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
+            GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
+            ORDER BY COUNT_PUB DESC
+            FETCH FIRST 3 ROWS ONLY;
+        """
+        params = (f"%{grant_identifier}%",)
 
     # Execute SQL
     headers, rows, status_msg, error = execute_raw_sql(sql, params)
