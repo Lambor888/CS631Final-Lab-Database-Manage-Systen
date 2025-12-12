@@ -39,6 +39,10 @@ INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date)
 VALUES (103, 'Bob', 'Lee', 'Collaborator', '2023-01-15');
 INSERT INTO COLLABORATOR (Member_ID, Institute, Biography) VALUES (103, 'NYU', 'Specializes in AI Ethics.');
 
+INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date)
+VALUES (104, 'Sara', 'Kim', 'Collaborator', '2019-07-30');
+INSERT INTO COLLABORATOR (Member_ID, Institute, Biography) VALUES (104, 'UCLA', 'Researcher in Efficient Blockchains.');
+
 INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date, Mentor_ID, Mentor_Start_Date, Mentor_End_Date) 
 VALUES (20000, 'Alice', 'Johnson', 'Student', '2022-09-01', 1, '2022-09-01', '2026-05-15');
 INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20000, 'S9001', 'MS', 'CS');
@@ -67,6 +71,18 @@ INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date, Mento
 VALUES (20006, 'James', 'Anderson', 'Student', '2020-03-01', 5, '2024-03-01', '2027-03-01');
 INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20006, 'S9007', 'PhD', 'EE');
 
+INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date)
+VALUES (20007, 'Mia', 'Thomas', 'Student', '2021-09-10');
+INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20007, 'S9008', 'MS', 'CS');
+
+INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date, Mentor_ID, Mentor_Start_Date, Mentor_End_Date)
+VALUES (20008, 'Ethan', 'Taylor', 'Student', '2019-11-05', 2, '2024-11-05', '2026-11-05');
+INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20008, 'S9009', 'PhD', 'AERO ENGR');
+
+INSERT INTO LAB_MEMBER (Member_ID, First_Name, Last_Name, Type, Join_Date)
+VALUES (20009, 'Isabella', 'Moore', 'Student', '2022-06-18');
+INSERT INTO STUDENT (Member_ID, Student_Num, Ac_Level, Major) VALUES (20009, 'S9010', 'BS', 'CS');
+
 
 -- Grants
 INSERT INTO GRANT_INFO (Grant_ID, Source, Budget, Start_Date) 
@@ -74,6 +90,9 @@ VALUES (101, 'NSF', 500000.00, '2024-01-01');
 
 INSERT INTO GRANT_INFO (Grant_ID, Source, Budget, Start_Date) 
 VALUES (102, 'DOD', 300000.00, '2023-05-20');
+
+INSERT INTO GRANT_INFO (Grant_ID, Source, Budget, Start_Date)
+VALUES (103, 'NIH', 750000.00, '2022-09-15');
 
 -- Projects
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
@@ -87,6 +106,9 @@ VALUES (302, 1, 'Quantum Computing in Drug Discovery', 'Paused', '2023-03-01', '
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (104, 3, 'AI Ethics Framework Development', 'Completed', '2021-03-10', '2023-03-10');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
+VALUES (210, 4, 'Blockchain for Secure Data Sharing', 'Active', '2022-10-01', '2025-10-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
 VALUES (200, 5, 'Advancement in Modulation for Signal Processing', 'Active', '2022-05-01', '2025-05-01');
@@ -112,6 +134,11 @@ VALUES (410, 9, 'Exploration of LLMs in Research Publications', 'Completed', '20
 -- Funds
 INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (101, 201);
 INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (102, 203);
+INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (103, 105);
+INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (103, 102);
+INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (103, 105);
+INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (101, 210);
+
 
 -- Equipment
 INSERT INTO EQUIPMENT (Equip_ID, Name, Type, Status, Purchase_Date, Req_Qualification) 
@@ -176,6 +203,9 @@ VALUES (416, 'Signal Processing Algorithms for 5G Communications', 'January', 20
 
 INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
 VALUES (417, 'State Space Models in Control Systems Engineering', 'April', 2019, 'Control Engineering Practice', '10.1016/j.conengprac.2019.02.005');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (418, 'Improvements on Website Accessibility Using AI', 'July', 2023, 'Journal of Web Engineering', '10.1145/3575678');
 -- Authors
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (9, 401);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (2, 402);
@@ -194,6 +224,7 @@ INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20005, 414);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20006, 415);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20006, 416);
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20006, 417);
+INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (20007, 418);
 
 
 
@@ -224,6 +255,24 @@ VALUES (20000, 201, 'Developer', 150);
 
 INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
 VALUES (3, 104, 'Leader', 180);
+
+INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
+VALUES (4, 210, 'Leader', 500);
+
+INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
+VALUES (104, 210, 'Collaborator', 100);
+
+INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
+VALUES (20000, 210, 'Developer', 250);
+
+INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
+VALUES (20004, 210, 'Developer', 250);
+
+INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
+VALUES (20007, 210, 'Developer', 250);
+
+INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours)
+VALUES (20009, 210, 'Developer', 250);
 
 INSERT INTO WORK_ON (Member_ID, Project_ID, Role, Hours) 
 VALUES (8, 202, 'Leader', 300);
