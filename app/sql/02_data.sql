@@ -54,11 +54,32 @@ VALUES (102, 'DOD', 300000.00, '2023-05-20');
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (201, 1, 'Quantum Machine Learning', 'Active', '2024-02-01', '2027-02-01');
 
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
+VALUES (102, 4, 'Applications of Quantum Machine Learning in Leukemia Research', 'Active', '2023-06-15', '2026-06-15');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
+VALUES (103, 9, 'Prototype Construction for IEEE Conference', 'Active', '2022-09-01', '2026-10-01');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
+VALUES (104, 3, 'AI Ethics Framework Development', 'Completed', '2021-03-10', '2023-03-10');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
+VALUES (105, 6, 'Wearable Technology for Health Monitoring', 'Active', '2022-11-05', '2025-11-05');
+
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (202, 8, 'Design of Renewable Energy Systems', 'Paused', '2020-07-14', '2026-01-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
+VALUES (302, 4, 'Quantum Computing in Drug Discovery', 'Paused', '2023-03-01', '2026-03-01');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (203, 9, 'Investigating Bioterrorism Threats', 'Completed', '2023-05-20', '2023-11-20');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
+VALUES (403, 10, 'Urban Renewable Energy Solutions', 'Active', '2021-09-15', '2024-09-15');
+
+INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
+VALUES (410, 11, 'Exploration of LLMs in ', 'Completed', '2019-01-10', '2022-01-10');
 
 -- Funds
 INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (101, 201);
@@ -80,6 +101,30 @@ VALUES (401, 'Integrating Wearable Technology into Chronic Disease Management', 
 
 INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
 VALUES (402, 'Innovative Materials for Enhancing Structural Integrity in Aerospace Applications', 'April', 2009, 'Journal of Advanced Engineering Materials', '10.1234/jaem.2025.0098');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (403, 'Advancements in Quantum Computing Algorithms for Large-Scale Data Processing', 'June', 2023, 'ACM Computing Surveys', '10.1145/3571234');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (404, 'Renewable Energy Solutions for Urban Environments', 'September', 2021, 'Renewable Energy Journal', '10.1016/j.renene.2021.05.045');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (405, 'Bioterrorism Threat Detection Using Advanced Sensor Networks', 'March', 2024, 'Journal of Homeland Security', '10.1080/19361610.2024.1723456');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (406, 'Machine Learning Techniques for Predictive Analytics in Healthcare', 'November', 2022, 'Health Informatics Journal', '10.1177/14604582221123456');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (407, 'AI Ethics in Autonomous Systems: A Comprehensive Review', 'February', 2020, 'Ethics and Information Technology', '10.1007/s10676-020-09531-5');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (408, 'Quantum Entanglement and Its Applications in Secure Communications', 'July', 2021, 'Journal of Quantum Information Science', '10.4236/jqis.2021.107005');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (409, 'Advances in Renewable Energy Storage Technologies', 'October', 2023, 'Energy Storage Materials', '10.1016/j.ensm.2023.05.012');
+
+INSERT INTO PUBLICATION (Public_ID, Title, Month, Year, Venue, DOI)
+VALUES (410, 'Project Management Strategies for Large-Scale Engineering Projects', 'December', 2019, 'International Journal of Project Management', '10.1016/j.ijproman.2019.06.004');
 
 -- Authors
 INSERT INTO AUTHOR (Member_ID, Public_ID) VALUES (9, 401);
