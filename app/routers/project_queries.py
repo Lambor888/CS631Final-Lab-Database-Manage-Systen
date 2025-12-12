@@ -280,12 +280,48 @@ async def get_member_publications(request: Request, publication_count: str = For
     # Render the common template
     return templates.TemplateResponse("query_result.html", {
         "request": request,
-        "page_title": "Equipment Members Details",
+        "page_title": "Member Publications Details",
         "headers": headers,
         "rows": rows,
         "error_detail": error,
         "sql_query": sql,
         "origin": origin
+    })
+
+# Task 3 Bullet 2: Calculate the average number of student publications per major.
+@router.post("/query/publication-major") #your own query function
+async def get_publications_per_major(request: Request):
+    """
+    Handles the publications per major form submission.
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    sql = """ 
+        SELECT S.Major AS "Major", AVG(COALESCE(L.COUNT_PUB, 0)) AS "Average Publications" 
+        FROM STUDENT S 
+        LEFT JOIN (SELECT Member_ID, COUNT(*) AS COUNT_PUB 
+                            FROM AUTHOR GROUP BY MEMBER_ID) 
+                            AS L 
+        ON S.Member_ID = L.Member_ID 
+        GROUP BY S.MAJOR;
+    """
+    params = ""
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Publications Per Major Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin  
     })
 
 # Task 3 Bullet 4: Find the three most prolific members who have worked on a project funded by a given grant.
@@ -300,40 +336,40 @@ async def get_grant_prolific_members(request: Request, grant_identifier: str = F
     # Should not be None but have here just in case it could be in the future 
     if grant_identifier is None:
         sql = """
-            SELECT First_name, last_name, title, L.Source, COUNT(P.Member_ID) AS COUNT_PUB
+            SELECT First_name AS "First Name", last_name AS "Last Name", title AS "Project Title", L.Source AS "Grant Source", COUNT(P.Member_ID) AS "Number of Publications"
             FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND FUNds.Grant_ID = 101 )
             AS L
             LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
             JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
             JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
             GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
-            ORDER BY COUNT_PUB DESC
+            ORDER BY "Number of Publications" DESC
             FETCH FIRST 3 ROWS ONLY;
         """
         params = ""
     elif grant_identifier.isdigit():
         sql = """
-            SELECT First_name, last_name, title, L.Source, COUNT(P.Member_ID) AS COUNT_PUB
+            SELECT First_name AS "First Name", last_name AS "Last Name", title AS "Project Title", L.Source AS "Grant Source", COUNT(P.Member_ID) AS "Number of Publications"
             FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND FUNds.Grant_ID = %s )
             AS L
             LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
             JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
             JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
             GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
-            ORDER BY COUNT_PUB DESC
+            ORDER BY "Number of Publications" DESC
             FETCH FIRST 3 ROWS ONLY;
         """
         params = (int(grant_identifier),)
     else:
         sql = """
-            SELECT First_name, last_name, title, L.Source, COUNT(P.Member_ID) AS COUNT_PUB
+            SELECT First_name AS "First Name", last_name AS "Last Name", title AS "Project Title", L.Source AS "Grant Source", COUNT(P.Member_ID) AS "Number of Publications"
             FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND GRANT_INFO.source ILIKE %s )
             AS L
             LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
             JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
             JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
             GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
-            ORDER BY COUNT_PUB DESC
+            ORDER BY "Number of Publications" DESC
             FETCH FIRST 3 ROWS ONLY;
         """
         params = (f"%{grant_identifier}%",)
@@ -347,7 +383,7 @@ async def get_grant_prolific_members(request: Request, grant_identifier: str = F
     # Render the common template
     return templates.TemplateResponse("query_result.html", {
         "request": request,
-        "page_title": "Equipment Members Details",
+        "page_title": "Prolific Members Details",
         "headers": headers,
         "rows": rows,
         "error_detail": error,
