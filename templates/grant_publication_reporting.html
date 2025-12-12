@@ -40,12 +40,42 @@
     <hr>
     <!--add button-->
     <div class="query-section">
-        <h2>Project Status Query (Project Status)</h2>
-        <p><strong>Function Description:</strong> Enter a project ID or a keyword from the project title to retrieve the project's current status and details.</p>
+        <h2>Member Publications Query</h2>
+        <p><strong>Function Description:</strong> Enter a number to limit the number of results returned for member(s) with the highest number of publications.</p>
         
-        <form method="POST" action="/query/project-status">
-            <input type="text" name="project_identifier" placeholder="Enter ID or title..." required>
-            <button type="submit">Query Project Status</button>
+        <form method="POST" action="/query/publication-count">
+            <input type="text" name="publication_count" placeholder="Enter number...">
+            <button type="submit">Query Member Publications</button>
+        </form>
+    </div>
+    <div class="query-section">
+        <h2>Average Publications Per Major Query</h2>
+        <p><strong>Function Description:</strong> Display the average number of student publications per major.</p>
+        
+        <form method="POST" action="/query/publication-major">
+            <button type="submit" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">
+                Query Publications Per Major
+            </button>
+        </form>
+    </div>
+    <div class="query-section">
+        <h2>Active Grant Project Query</h2>
+        <p><strong>Function Description:</strong> Enter a grant ID or a keyword from the grant source, and the starting and ending dates, to find the active projects funded by this grant during this period.</p>
+        
+        <form method="POST" action="/query/grant-active">
+            <input type="text" name="grant_identifier" placeholder="Enter grant ID or title...">
+            <input type="text" name="starting_period" placeholder="Enter starting date..." required>
+            <input type="text" name="ending_period" placeholder="Enter ending date..." required>
+            <button type="submit">Query Funded Active Projects</button>
+        </form>
+    </div>
+    <div class="query-section">
+        <h2>Prolific Members Query</h2>
+        <p><strong>Function Description:</strong> Enter a grant ID or a keyword from the grant source to find the three most prolific members who have worked on a project funded by this grant.</p>
+        
+        <form method="POST" action="/query/grant-prolific">
+            <input type="text" name="grant_identifier" placeholder="Enter ID or title..." required>
+            <button type="submit">Query Prolific Members</button>
         </form>
     </div>
     <!--this is a button section-->

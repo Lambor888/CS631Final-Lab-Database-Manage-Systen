@@ -232,4 +232,228 @@ async def get_equipment_members(request: Request, equipment_identifier: str = Fo
         "origin": origin
     })
 
+# Task 3 Bullet 1: Identify the name of the member(s) with the highest number of publications.
+@router.post("/query/publication-count") #your own query function
+async def get_member_publications(request: Request, publication_count: str = Form(None)):
+    """
+    Handles the member publications query form submission.
+    Uses a default or numerical number of members to limit the number of results returned,
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    if publication_count is None:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", COUNT(publication.public_id) AS "Number of Publications"
+            FROM lab_member, publication, author
+            WHERE lab_member.member_id = author.member_id AND author.public_id = publication.public_id
+            GROUP BY lab_member.first_name, lab_member.last_name
+            ORDER BY "Number of Publications" DESC;
+        """
+        params = ""
+    elif publication_count.isdigit():
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", COUNT(publication.public_id) AS "Number of Publications"
+            FROM lab_member, publication, author
+            WHERE lab_member.member_id = author.member_id AND author.public_id = publication.public_id
+            GROUP BY lab_member.first_name, lab_member.last_name
+            ORDER BY "Number of Publications" DESC
+            LIMIT %s;
+        """
+        params = (int(publication_count),)
+    # Default query if user enters anything other than a numerical value
+    else:
+        sql = """
+            SELECT lab_member.first_name AS "First Name", lab_member.last_name AS "Last Name", COUNT(publication.public_id) AS "Number of Publications"
+            FROM lab_member, publication, author
+            WHERE lab_member.member_id = author.member_id AND author.public_id = publication.public_id
+            GROUP BY lab_member.first_name, lab_member.last_name
+            ORDER BY "Number of Publications" DESC;
+        """
+        params = ""
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Member Publications Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
+    })
+
+# Task 3 Bullet 2: Calculate the average number of student publications per major.
+@router.post("/query/publication-major") #your own query function
+async def get_publications_per_major(request: Request):
+    """
+    Handles the publications per major form submission.
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    sql = """ 
+        SELECT S.Major AS "Major", AVG(COALESCE(L.COUNT_PUB, 0)) AS "Average Publications" 
+        FROM STUDENT S 
+        LEFT JOIN (SELECT Member_ID, COUNT(*) AS COUNT_PUB 
+                            FROM AUTHOR GROUP BY MEMBER_ID) 
+                            AS L 
+        ON S.Member_ID = L.Member_ID 
+        GROUP BY S.MAJOR;
+    """
+    params = ""
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Publications Per Major Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin  
+    })
+
+# Task 3 Bullet 3: Find the number of projects that were funded by a grant and were active during a given period of time.
+@router.post("/query/grant-active") #your own query function
+async def get_active_grant_projects(request: Request, grant_identifier: str = Form(None), starting_period: str = Form(None), ending_period: str = Form(None)):
+    """
+    Handles the member publications query form submission.
+    Uses a default or numerical number of members to limit the number of results returned,
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    if grant_identifier is None:
+        sql = """
+            SELECT G.Source AS "Grant Source", COUNT(P.Project_ID) AS "Number of Projects" 
+            FROM PROJECT P 
+            JOIN FUNDS F ON F.Project_ID = P.Project_ID 
+            JOIN GRANT_INFO G ON G.Grant_ID = F.Grant_ID
+            WHERE P.START_DATE >= %s 
+                AND P.END_DATE <= %s
+                AND P.STATUS = 'Active' 
+                GROUP BY "Grant Source";
+        """
+        params = (f"%{starting_period}%", f"%{ending_period}%",)
+    elif grant_identifier.isdigit():
+        sql = """
+            SELECT G.Source AS "Grant Source", COUNT(P.Project_ID) AS "Number of Projects" 
+            FROM PROJECT P 
+            JOIN FUNDS F ON F.Project_ID = P.Project_ID 
+            JOIN GRANT_INFO G ON G.Grant_ID = F.Grant_ID
+            WHERE P.START_DATE >= %s
+                AND P.END_DATE <= %s 
+                AND P.STATUS = 'Active' 
+                AND G.Grant_ID = %s
+            GROUP BY "Grant Source";
+        """
+        params = (f"%{starting_period}%", f"%{ending_period}%", int(grant_identifier),)
+    else:
+        sql = """
+            SELECT G.Source AS "Grant Source", COUNT(P.Project_ID) AS "Number of Projects" 
+            FROM PROJECT P 
+            JOIN FUNDS F ON F.Project_ID = P.Project_ID 
+            JOIN GRANT_INFO G ON G.Grant_ID = F.Grant_ID
+            WHERE P.START_DATE >= %s 
+                AND P.END_DATE <= %s 
+                AND P.STATUS = 'Active'
+                AND G.SOURCE ILIKE %s 
+                GROUP BY "Grant Source";
+        """
+        params = (f"%{starting_period}%", f"%{ending_period}%", f"%{grant_identifier}%",)
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Funded Active Projects Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
+    })
+
+# Task 3 Bullet 4: Find the three most prolific members who have worked on a project funded by a given grant.
+@router.post("/query/grant-prolific") #your own query function
+async def get_grant_prolific_members(request: Request, grant_identifier: str = Form(...)):
+    """
+    Handles the prolific members of a certain grant query form submission.
+    Determines if the input is grant ID (numeric) or grant source (text),
+    Constructs the appropriate SQL query, executes it, and renders the results.
+    """
+    # write RAW sql 👇
+    # Should not be None but have here just in case it could be in the future 
+    if grant_identifier is None:
+        sql = """
+            SELECT First_name AS "First Name", last_name AS "Last Name", title AS "Project Title", L.Source AS "Grant Source", COUNT(P.Member_ID) AS "Number of Publications"
+            FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND FUNds.Grant_ID = 101 )
+            AS L
+            LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
+            JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
+            JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
+            GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
+            ORDER BY "Number of Publications" DESC
+            FETCH FIRST 3 ROWS ONLY;
+        """
+        params = ""
+    elif grant_identifier.isdigit():
+        sql = """
+            SELECT First_name AS "First Name", last_name AS "Last Name", title AS "Project Title", L.Source AS "Grant Source", COUNT(P.Member_ID) AS "Number of Publications"
+            FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND FUNds.Grant_ID = %s )
+            AS L
+            LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
+            JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
+            JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
+            GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
+            ORDER BY "Number of Publications" DESC
+            FETCH FIRST 3 ROWS ONLY;
+        """
+        params = (int(grant_identifier),)
+    else:
+        sql = """
+            SELECT First_name AS "First Name", last_name AS "Last Name", title AS "Project Title", L.Source AS "Grant Source", COUNT(P.Member_ID) AS "Number of Publications"
+            FROM ( SELECT WORK_ON.Member_ID, FUNDS.project_id, GRANT_INFO.Source FROM WORK_ON, FUNDS, GRANT_INFO WHERE WORK_ON.project_ID = FUNDS.project_ID AND GRANT_INFO.Grant_ID = FUNDS.Grant_ID AND GRANT_INFO.source ILIKE %s )
+            AS L
+            LEFT OUTER JOIN AUTHOR AS P ON L.Member_ID = P.Member_ID
+            JOIN PROJECT ON PROJECT.Project_ID = L.Project_ID
+            JOIN LAB_MEMBER ON LAB_MEMBER.Member_ID = L.MEMBER_ID
+            GROUP BY lab_member.first_name, lab_member.last_name, title, l.source
+            ORDER BY "Number of Publications" DESC
+            FETCH FIRST 3 ROWS ONLY;
+        """
+        params = (f"%{grant_identifier}%",)
+
+    # Execute SQL
+    headers, rows, status_msg, error = execute_raw_sql(sql, params)
+
+    # Identify the original page to return to
+    origin = "grant"
+
+    # Render the common template
+    return templates.TemplateResponse("query_result.html", {
+        "request": request,
+        "page_title": "Prolific Members Details",
+        "headers": headers,
+        "rows": rows,
+        "error_detail": error,
+        "sql_query": sql,
+        "origin": origin
+    })
+
 # You can continue adding other project-related query functions here...
