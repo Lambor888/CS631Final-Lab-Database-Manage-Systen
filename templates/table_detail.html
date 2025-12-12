@@ -2,50 +2,207 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Table Data - {{ table_name }}</title>
+    <title>Data Management - {{ table_name }}</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f4f4; }
-        h1 { color: #333; }
+        h1 { color: #333; display: inline-block; margin-right: 10px; }
         table { width: 90%; margin: 20px auto; border-collapse: collapse; background-color: white; box-shadow: 0 2px 3px rgba(0,0,0,0.1); }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #007bff; color: white; text-transform: uppercase; font-size: 14px; }
         tr:nth-child(even) { background-color: #f9f9f9; }
         tr:hover { background-color: #f1f1f1; }
-        .error { color: red; font-weight: bold; }
+        .error { color: #d9534f; background-color: #f2dede; border: 1px solid #ebccd1; padding: 10px; border-radius: 4px; margin-bottom: 20px;}
+        .success { color: #28a745; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; margin-bottom: 20px;}
+        .info { color: #007bff; background-color: #cce5ff; border: 1px solid #b8daff; padding: 10px; border-radius: 4px; margin-bottom: 20px;}
+        .action-button { 
+            padding: 5px 10px; 
+            margin-right: 5px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 12px; 
+        }
+        .delete-btn { background-color: #dc3545; color: white; }
+        .update-btn { background-color: #ffc107; color: #333; }
+        .add-btn { background-color: #28a745; color: white; }
+        .crud-form-section { 
+            width: 90%; 
+            margin: 20px auto; 
+            padding: 20px; 
+            background-color: white; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-row { margin-bottom: 15px; }
+        .form-row label { display: inline-block; width: 180px; font-weight: bold; }
+        .form-row input[type="text"] { width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .disabled-input { background-color: #e9ecef; }
     </style>
 </head>
 <body>
     <h1>Table Data: `{{ table_name }}`</h1>
+    <button id="add-new-btn" class="action-button add-btn">➕ add new data</button>
     <hr>
+    
+    {% if message %}
+        <div class="crud-form-section">
+            <div class="{{ 'success' if 'successful' in message else 'error' }}">
+                <strong>Operation Message:</strong> {{ message }}
+            </div>
+        </div>
+    {% endif %}
 
     {% if error_detail %}
-        <h2 class="error">❌ Failed to Retrieve Data!</h2>
-        <p>Query Error: <code>{{ error_detail }}</code></p>
+        <h2 class="error">❌ Error!</h2>
+        <p>Error Detail: <code>{{ error_detail }}</code></p>
     {% elif rows %}
-        <p>Total Rows: <strong>{{ rows | length }}</strong></p>
+        <p>Total Rows: <strong>{{ rows | length }}</strong> | 
+           Primary Key Columns: <strong>{{ pk_columns | join(', ') }}</strong>
+        </p>
+        
         <table>
             <thead>
                 <tr>
                     {% for header in headers %}
                         <th>{{ header }}</th>
                     {% endfor %}
-                </tr>
+                    <th>操作</th> </tr>
             </thead>
             <tbody>
                 {% for row in rows %}
-                    <tr>
+                    {% set pk_value_string = [] %}
+                    {% set pk_value_map = {} %}
+                    {% for header in headers %}
+                        {% if header in pk_columns %}
+                            {# Construct a composite primary key string for JS passing and confirmation prompt #}
+                            {% set _ = pk_value_string.append(header ~ ':' ~ row[loop.index0] | string) %}
+                            {% set _ = pk_value_map.update({header: row[loop.index0]}) %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <tr data-pk-values="{{ pk_value_string | join(';') }}" data-row-values="{{ row|join('||') }}">
                         {% for cell in row %}
                             <td>{{ cell }}</td>
                         {% endfor %}
+                        <td>
+                            <button class="action-button update-btn" 
+                                onclick="openUpdateForm(this)">modify</button>
+                            
+                            <form method="POST" action="/tables/{{ table_name }}/delete" style="display: inline;" 
+                                onsubmit="return confirm('Are you sure you want to delete the row with primary key(s) [{{ pk_value_string | join(', ') }}]?');">
+                                
+                                {# Pass all primary key fields and values: names must be pk_column_name #}
+                                {% for pk_col in pk_columns %}
+                                    {# Here pk_col is already the exact column name (e.g., 'member_id') #}
+                                    <input type="hidden" name="pk_{{ pk_col }}" value="{{ pk_value_map[pk_col] }}">
+                                {% endfor %}
+
+                                <button type="submit" class="action-button delete-btn">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <p>The table `{{ table_name }}` exists, but no data was found.</p>
+        <p>Table `{{ table_name }}` exists but contains no data. Please click **Add New Data**.</p>
     {% endif %}
+    
+    
+    <div id="add-form-section" class="crud-form-section" style="display: none;">
+        <h2>Add New Data to Table `{{ table_name }}`</h2>
+        <form method="POST" action="/tables/{{ table_name }}/crud">
+            <input type="hidden" name="operation" value="insert">
+            
+            {% for header in headers %}
+            {% if header.lower() != 'duration' %}
+            <div class="form-row">
+                <label for="add_{{ header }}">{{ header }}</label>
+                <input type="text" id="add_{{ header }}" name="{{ header }}" 
+                       placeholder="Please enter a value for {{ header }}" >
+            </div>
+            {% endif %}
+            {% endfor %}
+            
+            <button type="submit" class="action-button add-btn">Submit New Data</button>
+            <button type="button" class="action-button" onclick="document.getElementById('add-form-section').style.display='none';">Cancel</button>
+        </form>
+    </div>
+
+    <div id="update-form-section" class="crud-form-section" style="display: none;">
+        <h2>Modify Data (Primary Key: <span id="update-pk-display"></span>)</h2>
+        <form method="POST" action="/tables/{{ table_name }}/crud" id="update-form">
+            <input type="hidden" name="operation" value="update">
+            
+            {% for header in headers %}
+            {% if header.lower() != 'duration' %}
+            <div class="form-row">
+                <label for="update_{{ header }}">{{ header }}</label>
+                <input type="text" id="update_{{ header }}" name="{{ header }}" 
+                       data-col-index="{{ loop.index0 }}"
+                       {% if header in pk_columns %} 
+                           readonly class="disabled-input" 
+                       {% endif %}>
+            </div>
+            {% endif %}
+            {% endfor %}
+            
+            <button type="submit" class="action-button update-btn">Submit Changes</button>
+            <button type="button" class="action-button" onclick="document.getElementById('update-form-section').style.display='none';">Cancel</button>
+        </form>
+    </div>
 
     <hr>
     <p><a href="/tables">← Back to Table List</a></p>
+
+    <script>
+        // Bind "Add New" button event
+        document.getElementById('add-new-btn').addEventListener('click', function() {
+            // Hide update form, show add form
+            document.getElementById('update-form-section').style.display = 'none';
+            document.getElementById('add-form-section').style.display = 'block';
+            // Scroll to the form
+            document.getElementById('add-form-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Fill and show "Update" form
+        function openUpdateForm(buttonElement) {
+            const row = buttonElement.closest('tr');
+            // Get composite primary key value string: "Member_ID:1;Project_ID:201"
+            const pkValueString = row.getAttribute('data-pk-values');
+            // Get all column values string: "value1||value2||value3"
+            const rowValues = row.getAttribute('data-row-values').split('||'); 
+            
+            const headers = {{ headers | tojson }};
+            const pkColumns = {{ pk_columns | tojson }};
+
+            const pkMap = {};
+            pkValueString.split(';').forEach(item => {
+                const [col, val] = item.split(':');
+                pkMap[col] = val;
+            });
+
+            document.getElementById('update-pk-display').textContent = pkValueString.replace(/;/g, ', ');
+
+            headers.forEach((header, index) => {
+                const inputElement = document.getElementById(`update_${header}`);
+                if (inputElement) {
+                    // Ensure all fields are filled with values
+                    inputElement.value = rowValues[index] !== 'None' ? rowValues[index] : ''; // JS side: convert 'None' back to empty for user editing
+                    
+                    // Ensure primary key fields have their name attribute set to their column name for backend handle_crud
+                    if (pkColumns.includes(header)) {
+                         // Since Jinja template already sets name="{{ header }}", we only need to ensure the value is correct
+
+                    }
+                }
+            });
+
+            document.getElementById('add-form-section').style.display = 'none';
+            document.getElementById('update-form-section').style.display = 'block';
+            document.getElementById('update-form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>

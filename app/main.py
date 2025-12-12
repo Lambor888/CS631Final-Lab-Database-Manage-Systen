@@ -3,8 +3,8 @@ import psycopg2
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 import time
-from .utils import execute_raw_sql
-from .routers import project_queries
+from .utils import execute_raw_sql, get_primary_key_columns
+from .routers import crud_operations, project_queries
 
 # 1. Initialize Application and Template Engine
 app = FastAPI()
@@ -13,7 +13,7 @@ templates = Jinja2Templates(directory="templates")
 
 ###################add your routers here
 app.include_router(project_queries.router)
-
+app.include_router(crud_operations.router)
 
 ############
 
@@ -172,13 +172,19 @@ def get_table_data(table_name):
 @app.get("/tables/{table_name}", include_in_schema=False)
 async def table_detail(request: Request, table_name: str):
     """
-    New route: Displays detailed data for a specific table.
+    Display detailed data for a specific table. Now accepts a message query parameter and passes the primary key list.
     """
-    # Add security check: ensure the requested table name is an actual existing table name
-    valid_tables, _ = get_all_table_names()
+    message = request.query_params.get("message") 
     
+    query_valid_tables = """
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+    """
+    _, table_rows, _, _ = execute_raw_sql(query_valid_tables)
+    valid_tables = [row[0] for row in table_rows]
+
     if table_name not in valid_tables:
-        # Simple error handling; a dedicated error template could be created in a production application
         return templates.TemplateResponse(
             "tables.html", 
             {
@@ -189,10 +195,12 @@ async def table_detail(request: Request, table_name: str):
             status_code=404
         )
         
-    # Retrieve table data
-    headers, rows, error = get_table_data(table_name)
-    
-    # Render the templates/table_detail.html template
+    query_data = f"SELECT * FROM \"{table_name}\";"
+    headers, rows, _, error = execute_raw_sql(query_data)
+
+    pk_columns = get_primary_key_columns(table_name)
+
+    # Render templates/table_detail.html template
     return templates.TemplateResponse(
         "table_detail.html", 
         {
@@ -200,7 +208,9 @@ async def table_detail(request: Request, table_name: str):
             "table_name": table_name,
             "headers": headers,
             "rows": rows,
-            "error_detail": error
+            "error_detail": error,
+            "message": message, 
+            "pk_columns": pk_columns 
         }
     )
 
