@@ -48,6 +48,16 @@
             <button type="submit">Query Member Publications</button>
         </form>
     </div>
+
+    <div class="query-section">
+        <h2>Prolific Members Query</h2>
+        <p><strong>Function Description:</strong> Enter a grant ID or a keyword from the grant source to find the three most prolific members who have worked on a project funded by this grant.</p>
+        
+        <form method="POST" action="/query/grant-prolific">
+            <input type="text" name="grant_identifier" placeholder="Enter ID or title..." required>
+            <button type="submit">Query Prolific Members</button>
+        </form>
+    </div>
     <!--this is a button section-->
     <!--add more query buttons here if needed-->
 
