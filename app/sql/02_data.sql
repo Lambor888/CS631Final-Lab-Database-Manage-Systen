@@ -55,31 +55,31 @@ INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
 VALUES (201, 1, 'Quantum Machine Learning', 'Active', '2024-02-01', '2027-02-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
-VALUES (102, 4, 'Applications of Quantum Machine Learning in Leukemia Research', 'Active', '2023-06-15', '2026-06-15');
+VALUES (102, 1, 'Applications of Quantum Machine Learning in Leukemia Research', 'Active', '2023-06-15', '2026-06-15');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
 VALUES (103, 9, 'Prototype Construction for IEEE Conference', 'Active', '2022-09-01', '2026-10-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
-VALUES (104, 3, 'AI Ethics Framework Development', 'Completed', '2021-03-10', '2023-03-10');
+VALUES (104, 4, 'AI Ethics Framework Development', 'Completed', '2021-03-10', '2023-03-10');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
-VALUES (105, 6, 'Wearable Technology for Health Monitoring', 'Active', '2022-11-05', '2025-11-05');
+VALUES (105, 8, 'Wearable Technology for Health Monitoring', 'Active', '2022-11-05', '2025-11-05');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
-VALUES (202, 8, 'Design of Renewable Energy Systems', 'Paused', '2020-07-14', '2026-01-01');
+VALUES (202, 9, 'Design of Renewable Energy Systems', 'Paused', '2020-07-14', '2026-01-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
-VALUES (302, 4, 'Quantum Computing in Drug Discovery', 'Paused', '2023-03-01', '2026-03-01');
+VALUES (302, 1, 'Quantum Computing in Drug Discovery', 'Paused', '2023-03-01', '2026-03-01');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date) 
 VALUES (203, 9, 'Investigating Bioterrorism Threats', 'Completed', '2023-05-20', '2023-11-20');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
-VALUES (403, 10, 'Urban Renewable Energy Solutions', 'Active', '2021-09-15', '2024-09-15');
+VALUES (403, 8, 'Urban Renewable Energy Solutions', 'Active', '2021-09-15', '2024-09-15');
 
 INSERT INTO PROJECT (Project_ID, Leader_ID, Title, Status, Start_Date, End_Date)
-VALUES (410, 11, 'Exploration of LLMs in ', 'Completed', '2019-01-10', '2022-01-10');
+VALUES (410, 9, 'Exploration of LLMs in Research Publications', 'Completed', '2019-01-10', '2022-01-10');
 
 -- Funds
 INSERT INTO FUNDS (Grant_ID, Project_ID) VALUES (101, 201);
